@@ -62,7 +62,7 @@ property netDelay : 30
 property processDelay : 2
 
 --Used to store supported iTunes versions
-property supportedItunesVersions : {"11.0.1", "11.0.2"}
+property supportedItunesVersions : {"11.0.1", "11.0.2", "11.0.4"}
 
 (*
 	Email
@@ -110,8 +110,6 @@ property addressZipHeaders : {"Zip Code", "Zip", "Address Zip"}
 property phoneAreaCodeHeaders : {"Area Code", "Phone Area Code"}
 property phoneNumberHeaders : {"Phone Number", "Phone"}
 property accountStatusHeaders : {"Account Status"} --Used to keep track of what acounts have been created
-
-
 
 set userDroppedFile to false
 
@@ -234,7 +232,7 @@ on MainMagic(userDroppedFile, droppedFile)
 					
 					delay 1 --Fix so iTunes is properly tested for, instead of just manually delaying
 					
-					GetItunesStatusUntillLcd("Does Not Match", "Accessing iTunes Store‚Ä¶", 4, "times. Check for:", 120, "intervals of", 0.25, "seconds") ------------------------Wait for iTunes to open (if closed) and the iBooks page to load
+					GetItunesStatusUntillLcd("Does Not Match", "Accessing iTunes Store…", 4, "times. Check for:", 120, "intervals of", 0.25, "seconds") ------------------------Wait for iTunes to open (if closed) and the iBooks page to load
 					
 					SignOutItunesAccount() ---------------------------------------------------------------------------------------------------------------------------------------------------------Signout Apple ID that is currently signed in (if any)
 					
@@ -283,7 +281,7 @@ on MainMagic(userDroppedFile, droppedFile)
 				
 				--Fix for multiple positive outcomes
 				if itunesVersionIsSupported is false then --If the script was run against an unsupported version of iTunes...
-					if scriptAction is "Continue" then --‚Ä¶And it wasn't aborted...
+					if scriptAction is "Continue" then --…And it wasn't aborted...
 						if button returned of (display dialog "Would you like to add iTunes Version " & itunesVersion & " to the list of supported iTunes versions?" buttons {"Yes", "No"} default button "No") is "Yes" then --...then ask the user if they want to add the current version of iTunes to the supported versions list
 							set supportedItunesVersions to supportedItunesVersions & itunesVersion
 							display dialog "iTunes version " & itunesVersion & " succesfully added to list of supported versions."
@@ -492,7 +490,7 @@ on findInList(matchList, listContents)
 		end repeat
 		return {findState, findLocation} as list
 	on error
-		display dialog "Hmm‚Ä¶ Well, I was looking for something in the file, and something went wrong." buttons "Bummer"
+		display dialog "Hmm… Well, I was looking for something in the file, and something went wrong." buttons "Bummer"
 		return 0
 	end try
 end findInList
@@ -587,7 +585,7 @@ on verifyPage(expectedElementString, expectedElementLocation, expectedElementCou
 	tell application "System Events"
 		
 		set checkFrequency to 0.25 --How often (in seconds) the iTunes LCD will be check to see if iTunes is busy loading the page
-		my GetItunesStatusUntillLcd("Does Not Match", "Accessing iTunes Store‚Ä¶", 4, "times. Check for:", (verificationTimeout * (1 / checkFrequency)), "intervals of", checkFrequency, "seconds")
+		my GetItunesStatusUntillLcd("Does Not Match", "Accessing iTunes Store…", 4, "times. Check for:", (verificationTimeout * (1 / checkFrequency)), "intervals of", checkFrequency, "seconds")
 		
 		set elementCount to count of every UI element of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
 		
@@ -723,7 +721,7 @@ on installIbooks()
 		if pageVerification is "verified" then --Actually click the button to obtain iBooks
 			tell application "System Events"
 				try
-					if description of button 1 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes" contains "iBooks: $0.00" then
+					if description of button 1 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes" contains "$0.00 Free, iBooks" then
 						click button 1 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
 					else
 						set errorList to errorList & "Unable to locate install app button by its description."
@@ -764,14 +762,14 @@ end ClickCreateAppleIDButton
 
 on ClickContinueOnPageOne()
 	
-	set pageVerification to verifyPage("Welcome to the iTunes Store", 2, 11, netDelay) ----------Verify we are at page 1 of the Apple ID creation page
+	set pageVerification to verifyPage("Welcome to the iTunes Store", 2, 12, netDelay) ----------Verify we are at page 1 of the Apple ID creation page
 	
 	if pageVerification is "verified" then
 		
 		try
 			tell application "System Events"
-				if title of button 2 of group 2 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes" is "Continue" then
-					click button 2 of group 2 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
+				if title of button 2 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes" is "Continue" then
+					click button 2 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
 				else
 					set errorList to errorList & "Unable to locate and click the Continue button on page ''Welcome to iTunes Store''."
 				end if
@@ -790,7 +788,7 @@ end ClickContinueOnPageOne
 
 on AgreeToTerms()
 	
-	set pageVerification to verifyPage("Terms and Conditions and Apple Privacy Policy", 2, 14, netDelay) ----------Verify we are at page 1 of the Apple ID creation page
+	set pageVerification to verifyPage("Terms and Conditions and Apple Privacy Policy", 2, 16, netDelay) ----------Verify we are at page 1 of the Apple ID creation page
 	
 	if pageVerification is "verified" then
 		tell application "System Events"
@@ -813,9 +811,9 @@ on AgreeToTerms()
 			
 			if scriptAction is "Continue" then
 				try
-					set buttonVerification to title of button 3 of group 6 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
+					set buttonVerification to title of button 3 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
 					if buttonVerification is "Agree" then
-						click button 3 of group 6 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
+						click button 3 of UI element 1 of scroll area 1 of splitter group 1 of window 1 of application process "iTunes"
 					else
 						set errorList to errorList & "Unable to locate and click button ''Agree''."
 					end if
@@ -945,7 +943,7 @@ on ProvideAppleIdDetails(appleIdEmail, appleIdPassword, appleIdSecretQuestion1, 
 				end if
 				
 				if scriptAction is "Continue" then
-					tell me to ClickThis("Continue Button", button "Continue" of group 18 of theForm)
+					tell me to ClickThis("Continue Button", button 3 of theForm)
 				end if
 			end tell
 		else --(If page didn't verify)
@@ -960,13 +958,13 @@ on ProvidePaymentDetails(userFirstName, userLastName, addressStreet, addressCity
 		
 		if pageVerification is "Verified" then
 			tell application "System Events"
-				click button 1 of group 6 of list 1 of theForm --Click payment type "none"
+				click radio button 6 of radio group 1 of theForm --Click payment type "none"
 			end tell
 		end if
 		
 		--Wait for the page to change after selecting payment type
 		set checkFrequency to 0.25 --How often (in seconds) the iTunes LCD will be checked to see if iTunes is busy loading the page
-		GetItunesStatusUntillLcd("Does Not Match", "Accessing iTunes Store‚Ä¶", 4, "times. Check for:", (netDelay * (1 / checkFrequency)), "intervals of", checkFrequency, "seconds")
+		GetItunesStatusUntillLcd("Does Not Match", "Accessing iTunes Store…", 4, "times. Check for:", (netDelay * (1 / checkFrequency)), "intervals of", checkFrequency, "seconds")
 		
 		tell application "System Events"
 			try
